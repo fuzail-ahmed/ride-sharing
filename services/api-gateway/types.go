@@ -1,6 +1,8 @@
 package main
 
-import "ride-sharing/shared/types"
+import (
+	"ride-sharing/shared/types"
+)
 
 type previewTripRequest struct {
 	UserID      string `json:"userID"`
