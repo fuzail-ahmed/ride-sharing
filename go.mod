@@ -39,7 +39,7 @@ require (
 )
 
 require (
-	github.com/gorilla/websocket v1.5.3
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/mmcloughlin/geohash v0.10.0
 	github.com/rabbitmq/amqp091-go v1.10.0
 	golang.org/x/net v0.34.0 // indirect
