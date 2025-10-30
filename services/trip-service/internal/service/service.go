@@ -59,3 +59,76 @@ func (s *service) GetRoute(ctx context.Context, pickup, destination *types.Coord
 
 	return &routeResp, nil
 }
+
+func (s *service) EstimatePackagesPriceWithRoute(route *tripTypes.OsrmApiResponse) []*domain.RideFareModel {
+	baseFare := getBaseFares()
+
+	estimatedFares := make([]*domain.RideFareModel, len(baseFare))
+
+	for i, fare := range estimatedFares {
+		estimatedFares[i] = estimatedFareRoute(fare, route)
+	}
+
+	return estimatedFares
+}
+
+func (s *service) GenerateTripFares(ctx context.Context, rideFares []*domain.RideFareModel, userID string) ([]*domain.RideFareModel, error) {
+	fares := make([]*domain.RideFareModel, len(rideFares))
+
+	for i, fare := range rideFares {
+		id := primitive.NewObjectID()
+
+		newFare := &domain.RideFareModel{
+			ID:                id,
+			UserID:            userID,
+			PackageSlug:       fare.PackageSlug,
+			TotalPriceInCents: fare.TotalPriceInCents,
+		}
+
+		if err := s.repo.SaveRideFare(ctx, newFare); err != nil {
+			return nil, fmt.Errorf("failed to save trip fare: %w", err)
+		}
+
+		fares[i] = fare
+	}
+
+	return fares, nil
+}
+
+func estimatedFareRoute(fare *domain.RideFareModel, route *tripTypes.OsrmApiResponse) *domain.RideFareModel {
+	pricingConfig := tripTypes.DefaultPricingConfig()
+	carPackagePrice := fare.TotalPriceInCents
+
+	distanceInKm := route.Routes[0].Distance
+	durationInMinutes := route.Routes[0].Duration
+
+	distanceFare := distanceInKm * pricingConfig.PricePerUnitOfDistance
+	timeFare := durationInMinutes * pricingConfig.PricingPerMinute
+	totalPrice := distanceFare + timeFare + carPackagePrice
+
+	return &domain.RideFareModel{
+		TotalPriceInCents: totalPrice,
+		PackageSlug:       fare.PackageSlug,
+	}
+}
+
+func getBaseFares() []*domain.RideFareModel {
+	return []*domain.RideFareModel{
+		{
+			PackageSlug:       "suv",
+			TotalPriceInCents: 200,
+		},
+		{
+			PackageSlug:       "sedan",
+			TotalPriceInCents: 350,
+		},
+		{
+			PackageSlug:       "van",
+			TotalPriceInCents: 400,
+		},
+		{
+			PackageSlug:       "luxury",
+			TotalPriceInCents: 1000,
+		},
+	}
+}
