@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	pb "ride-sharing/shared/proto/driver"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type gRPCHandler struct {
@@ -24,10 +23,29 @@ func NewGRPCHandler(server *grpc.Server, service *Service) *gRPCHandler {
 	return handler
 }
 
-func (h *gRPCHandler) RegisterDriver(context.Context, *pb.RegisterDriverRequest) (*pb.RegisterDriverResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterDriver not implemented")
+func (h *gRPCHandler) RegisterDriver(ctx context.Context, req *pb.RegisterDriverRequest) (*pb.RegisterDriverResponse, error) {
+	// TODO: Call the service method
+	driverID := req.GetDriverID()
+	packageSlug := req.GetPackageSlug()
+
+	driver, err := h.service.RegisterDriver(driverID, packageSlug)
+	if err != nil {
+		return nil, fmt.Errorf("error registering driver: %v", err)
+	}
+
+	return &pb.RegisterDriverResponse{
+		Driver: driver,
+	}, nil
 }
 
-func (h *gRPCHandler) UnregisterDriver(context.Context, *pb.RegisterDriverRequest) (*pb.RegisterDriverResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UnregisterDriver not implemented")
+func (h *gRPCHandler) UnregisterDriver(ctx context.Context, req *pb.RegisterDriverRequest) (*pb.RegisterDriverResponse, error) {
+	// TODO: Call the service method
+	driverID := req.GetDriverID()
+	h.service.UnregisterDriver(driverID)
+	return &pb.RegisterDriverResponse{
+			Driver: &pb.Driver{
+				Id: driverID,
+			},
+		},
+		nil
 }

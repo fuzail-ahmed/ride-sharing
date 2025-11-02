@@ -40,8 +40,8 @@ require (
 
 require (
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/mmcloughlin/geohash v0.10.0
-	github.com/rabbitmq/amqp091-go v1.10.0
+	github.com/mmcloughlin/geohash v0.10.0 // indirect
+	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
