@@ -72,8 +72,8 @@ func (s *service) EstimatePackagesPriceWithRoute(route *tripTypes.OsrmApiRespons
 
 	estimatedFares := make([]*domain.RideFareModel, len(baseFare))
 
-	for i, fare := range estimatedFares {
-		estimatedFares[i] = estimatedFareRoute(fare, route)
+	for i, f := range baseFare {
+		estimatedFares[i] = estimatedFareRoute(f, route)
 	}
 
 	return estimatedFares
@@ -124,6 +124,8 @@ func (s *service) GetAndValidateFare(ctx context.Context, fareID, userID string)
 // Required functions
 func estimatedFareRoute(fare *domain.RideFareModel, route *tripTypes.OsrmApiResponse) *domain.RideFareModel {
 	pricingConfig := tripTypes.DefaultPricingConfig()
+	log.Println("pricingConfig: ", pricingConfig)
+	log.Println(fare)
 	carPackagePrice := fare.TotalPriceInCents
 
 	distanceInKm := route.Routes[0].Distance
