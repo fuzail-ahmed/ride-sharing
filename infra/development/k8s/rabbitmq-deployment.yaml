@@ -13,32 +13,43 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      securityContext:
+        fsGroup: 999   # REQUIRED for PVC permissions
       containers:
         - name: rabbitmq
           image: rabbitmq:3-management
           ports:
             - containerPort: 5672 # AMQP port
             - containerPort: 15672 # Management UI port
-          readinessProbe:
-            exec:
-              command: ["rabbitmq-diagnostics", "check_running"]
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 15
-            failureThreshold: 3
-          livenessProbe:
-            exec:
-              command: ["rabbitmq-diagnostics", "check_running"]
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 15
+          
+          # startupProbe:
+          #   exec:
+          #     command: ["rabbitmq-diagnostics", "check_running"]
+          #   periodSeconds: 10
+          #   failureThreshold: 30   # ~5 minutes startup time
+
+          # readinessProbe:
+          #   exec:
+          #     command: ["rabbitmq-diagnostics", "check_running"]
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 15
+          #   timeoutSeconds: 20
+          #   failureThreshold: 6
+          # livenessProbe:
+          #   exec:
+          #     command: ["rabbitmq-diagnostics", "check_running"]
+          #   initialDelaySeconds: 120
+          #   periodSeconds: 30
+          #   timeoutSeconds: 20
+          #   failureThreshold: 6
+
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "1Gi"
+              cpu: "500m"
             limits:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "2Gi"
+              cpu: "1"
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
@@ -59,7 +70,7 @@ spec:
   - metadata:
       name: rabbitmq-data
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: ["ReadWriteOnce"]
       resources:
         requests:
           storage: 1Gi
