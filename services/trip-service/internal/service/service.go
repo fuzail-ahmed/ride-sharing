@@ -97,13 +97,17 @@ func (s *service) GenerateTripFares(ctx context.Context, rideFares []*domain.Rid
 			return nil, fmt.Errorf("failed to save trip fare: %w", err)
 		}
 
-		fares[i] = fare
+		fares[i] = newFare
 	}
 
 	return fares, nil
 }
 
 func (s *service) GetAndValidateFare(ctx context.Context, fareID, userID string) (*domain.RideFareModel, error) {
+	if fareID == "" || fareID == primitive.NilObjectID.Hex() {
+		return nil, fmt.Errorf("invalid fare ID")
+	}
+
 	fare, err := s.repo.GetRideFareByID(ctx, fareID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get trip fare: %w", err)

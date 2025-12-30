@@ -115,7 +115,7 @@ export default function RiderMap({ onRouteSelected }: RiderMapProps) {
             rideFareID: fare.id,
             userID: userID,
         } as HTTPTripStartRequestPayload
-
+        
         if (!fare.id) {
             alert("No Fare ID in the payload")
             return

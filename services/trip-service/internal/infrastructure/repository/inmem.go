@@ -19,11 +19,16 @@ func NewInmemRepository() *inmemRepository {
 }
 
 func (r *inmemRepository) CreateTrip(ctx context.Context, trip *domain.TripModel) (*domain.TripModel, error) {
+	fmt.Println(trip.ID.Hex())
 	r.trips[trip.ID.Hex()] = trip
+
 	return trip, nil
 }
 
 func (r *inmemRepository) SaveRideFare(ctx context.Context, f *domain.RideFareModel) error {
+	if f.ID.IsZero() {
+		return fmt.Errorf("cannot save fare with empty ID")
+	}
 	r.rideFares[f.ID.Hex()] = f
 	return nil
 }
