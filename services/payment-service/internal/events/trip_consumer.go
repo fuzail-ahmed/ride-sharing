@@ -25,6 +25,7 @@ func NewTripConsumer(rabbitmq *messaging.RabbitMQ, service domain.Service) *Trip
 }
 
 func (c *TripConsumer) Listen() error {
+	log.Println("PAYMENT SVC Trip consumer started working")
 	return c.rabbitmq.ConsumeMessages(messaging.PaymentTripResponseQueue, func(ctx context.Context, msg amqp091.Delivery) error {
 		var message contracts.AmqpMessage
 		if err := json.Unmarshal(msg.Body, &message); err != nil {
@@ -45,6 +46,7 @@ func (c *TripConsumer) Listen() error {
 				return err
 			}
 		}
+		log.Printf("unknown payment event: %+v", payload)
 
 		return nil
 	})
