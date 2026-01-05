@@ -74,7 +74,7 @@ func main() {
 	paymentConsumer := events.NewPaymentConsumer(rabbitmq, svc)
 	go paymentConsumer.Listen()
 
-	grpcServer := grpcserver.NewServer()
+	grpcServer := grpcserver.NewServer(tracing.WithTracingInterceptors()...)
 
 	//TODO: initialize our GRPC handler)
 	grpc.NewGRPCHandler(grpcServer, svc, publisher)
